@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
@@ -19,16 +18,19 @@
             android:src="@drawable/vector"
             android:layout_gravity="start"
             android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"/>
+            android:layout_marginStart="20dp"
+            style="@style/VectorColor"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="26dp"
+            android:fontFamily="@font/ys_display_medium"
+            android:textFontWeight="500"
             android:text="@string/settings"
-            android:textColor="@color/almost_black"
             android:textSize="@dimen/header_text"
             android:layout_marginTop="14dp"
-            android:layout_marginLeft="64dp"/>
+            android:layout_marginLeft="64dp"
+            style="@style/SettingsTextColor"/>
 
     </FrameLayout>
 
@@ -38,13 +40,8 @@
         android:layout_marginTop="24dp">
 
         <TextView
-            android:layout_width="300dp"
-            android:layout_height="19dp"
-            android:layout_marginLeft="@dimen/margin_horizontal"
-            android:layout_marginTop="21dp"
             android:text="@string/dark_theme"
-            android:textColor="@color/black"
-            android:textSize="@dimen/primary_text"/>
+            style="@style/SettingsTextStyle" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:layout_width="56dp"
@@ -60,13 +57,8 @@
         android:layout_height="61dp">
 
         <TextView
-            android:layout_width="300dp"
-            android:layout_height="19dp"
-            android:layout_marginLeft="@dimen/margin_horizontal"
-            android:layout_marginTop="21dp"
             android:text="@string/share_app"
-            android:textColor="@color/black"
-            android:textSize="@dimen/primary_text"/>
+            style="@style/SettingsTextStyle"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -83,13 +75,8 @@
         android:layout_height="61dp">
 
         <TextView
-            android:layout_width="300dp"
-            android:layout_height="19dp"
-            android:layout_marginLeft="@dimen/margin_horizontal"
-            android:layout_marginTop="21dp"
             android:text="@string/mail_support"
-            android:textColor="@color/black"
-            android:textSize="@dimen/primary_text"/>
+            style="@style/SettingsTextStyle"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -130,13 +117,8 @@
         android:layout_height="61dp">
 
         <TextView
-            android:layout_width="300dp"
-            android:layout_height="19dp"
-            android:layout_marginLeft="@dimen/margin_horizontal"
-            android:layout_marginTop="21dp"
             android:text="@string/terms_of_use"
-            android:textColor="@color/black"
-            android:textSize="@dimen/primary_text" />
+            style="@style/SettingsTextStyle"/>
 
         <ImageView
             android:layout_width="wrap_content"
