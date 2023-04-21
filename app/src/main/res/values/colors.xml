@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="main_screen">#3772E7</color>
-    <color name="almost_black">#1A1B22</color>
+    <color name="main_activity_light">#3772E7</color>
+    <color name="PM_black">#1A1B22</color>
+    <color name="PM_gray">#AEAFB4</color>
 </resources>

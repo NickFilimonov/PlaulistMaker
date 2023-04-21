@@ -11,14 +11,14 @@
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="cornerRadius">16dp</item>
-        <item name="android:textColor">@color/almost_black</item>
+        <item name="android:textColor">@color/PM_black</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">@dimen/header_text</item>
         <item name="fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight" tools:targetApi="p">500</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">10dp</item>
-        <item name="iconTint">@color/almost_black</item>
+        <item name="iconTint">@color/PM_black</item>
     </style>
 
     <style name="SettingsTextStyle">
@@ -26,20 +26,10 @@
         <item name="android:layout_height">19dp</item>
         <item name="android:layout_marginLeft">@dimen/margin_horizontal</item>
         <item name="android:layout_marginTop">21dp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:textSize">@dimen/primary_text</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:textFontWeight" tools:targetApi="p">400</item>
     </style>
-
-    <style name="SettingsTextColor">
-        <item name="android:textColor">@color/almost_black</item>
-    </style>
-
-    <style name="VectorColor">
-        <item name="android:fillColor">@color/almost_black</item>
-    </style>
-
-
 
 </resources>
