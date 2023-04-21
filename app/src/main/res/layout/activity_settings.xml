@@ -55,7 +55,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="61dp">
+        android:layout_height="61dp"
+        android:id="@+id/share_button">
 
         <TextView
             android:text="@string/share_app"
@@ -73,7 +74,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="61dp">
+        android:layout_height="61dp"
+        android:id="@+id/write_to_support_button">
 
         <TextView
             android:text="@string/mail_support"
@@ -115,7 +117,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="61dp">
+        android:layout_height="61dp"
+        android:id="@+id/user_agreement_button">
 
         <TextView
             android:text="@string/terms_of_use"

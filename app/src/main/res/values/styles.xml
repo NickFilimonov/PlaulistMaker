@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="ButtonStyle">
+    <style name="ButtonStyle" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:layout_height">0dp</item>
