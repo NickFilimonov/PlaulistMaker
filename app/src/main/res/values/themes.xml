@@ -13,6 +13,8 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="color">@color/PM_gray</item>
+        <item name="editTextBackground">@color/PM_light_gray</item>
+        <item name="iconTint">@color/PM_gray</item>
     </style>
 
 </resources>
