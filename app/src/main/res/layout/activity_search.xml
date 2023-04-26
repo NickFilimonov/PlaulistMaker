@@ -8,17 +8,10 @@
     tools:context=".SearchActivity">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:text="@string/search"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="@dimen/header_text"
-        android:fontFamily="@font/ys_display_medium"
-        android:textFontWeight="500"
-        android:layout_marginTop="14dp"
-        android:layout_marginStart="16dp"/>
+        style="@style/text_header" />
     
     <EditText
         android:id="@+id/edit_text_search"
@@ -65,8 +58,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="56dp"
-        android:src="@drawable/shape_line_search"
-        android:visibility="visible"/>
+        android:src="@drawable/shape_line_search"/>
 
     <Button
         android:id="@+id/search_button_search_activity"
@@ -80,6 +72,7 @@
         style="@style/search_activity_button" />
 
     <Button
+        android:id="@+id/library_button_search_activity"
         app:layout_constraintEnd_toStartOf="@id/settings_button_search_activity"
         app:layout_constraintStart_toEndOf="@id/search_button_search_activity"
         app:layout_constraintBottom_toBottomOf="parent"

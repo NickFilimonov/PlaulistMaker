@@ -17,4 +17,9 @@
         <item name="iconTint">@color/PM_gray</item>
     </style>
 
+    <style name="MySwitch">
+        <item name="trackTint">@color/trackTint_night_themes</item>
+        <item name="thumbTint">@color/main_activity_light</item>
+    </style>
+
 </resources>

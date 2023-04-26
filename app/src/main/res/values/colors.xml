@@ -11,4 +11,5 @@
     <color name="PM_black">#1A1B22</color>
     <color name="PM_gray">#AEAFB4</color>
     <color name="PM_light_gray">#E6E8EB</color>
+    <color name="trackTint_night_themes">#284581</color>
 </resources>

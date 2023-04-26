@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource"
     android:background="?attr/colorSecondary">
@@ -11,27 +12,23 @@
         android:layout_width="match_parent"
         android:layout_height="56dp">
 
-        <ImageView
-            android:id="@+id/back_button"
-            android:foreground="?attr/selectableItemBackground"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/vector"
-            android:layout_gravity="start"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-            />
+<!--        <ImageView-->
+<!--            android:id="@+id/back_button"-->
+<!--            android:foreground="?attr/selectableItemBackground"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:src="@drawable/vector"-->
+<!--            android:layout_gravity="start"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            />-->
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="26dp"
-            android:fontFamily="@font/ys_display_medium"
-            android:textFontWeight="500"
+            android:layout_height="wrap_content"
             android:text="@string/settings"
             android:textSize="@dimen/header_text"
-            android:layout_marginTop="14dp"
-            android:layout_marginLeft="64dp"
-            android:textColor="?attr/colorOnPrimary"/>
+            style="@style/text_header"/>
 
     </FrameLayout>
 
@@ -49,7 +46,8 @@
             android:layout_height="40dp"
             android:layout_gravity="end"
             android:layout_marginEnd="6dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_marginTop="10dp"
+            style="@style/MySwitch"/>
 
     </FrameLayout>
 
@@ -133,5 +131,44 @@
             android:paddingTop="24dp" />
 
     </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/search_button_settings_activity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="@style/search_activity_button"
+            android:text="@string/search"
+            app:icon="@drawable/search"
+            android:layout_gravity="bottom"/>
+
+        <Button
+            android:id="@+id/library_button_settings_activity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="@style/search_activity_button"
+            android:text="@string/library"
+            app:icon="@drawable/library"
+            android:layout_gravity="bottom"/>
+
+        <Button
+            android:id="@+id/settings_button_settings_activity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            style="@style/search_activity_button"
+            android:text="@string/settings"
+            android:textColor="@color/main_activity_light"
+            app:icon="@drawable/settings"
+            app:iconTint = "@color/main_activity_light"
+            android:layout_gravity="bottom"/>
+
+    </LinearLayout>
 
 </LinearLayout>

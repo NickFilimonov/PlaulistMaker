@@ -15,13 +15,24 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val backButton = findViewById<ImageView>(R.id.back_button)
+//        val backButton = findViewById<ImageView>(R.id.back_button)
         val shareButton = findViewById<FrameLayout>(R.id.share_button)
         val supportButton = findViewById<FrameLayout>(R.id.write_to_support_button)
         val agreementButton = findViewById<FrameLayout>(R.id.user_agreement_button)
+        val libraryButton = findViewById<Button>(R.id.library_button_settings_activity)
+        val searchButton = findViewById<Button>(R.id.search_button_settings_activity)
 
-        backButton.setOnClickListener {
-            finish()
+//        backButton.setOnClickListener {
+//            finish()
+//        }
+        libraryButton.setOnClickListener {
+            val displayIntent = Intent(this, LibraryActivity::class.java)
+            startActivity(displayIntent)
+        }
+
+        searchButton.setOnClickListener {
+            val displayIntent = Intent(this, SearchActivity::class.java)
+            startActivity(displayIntent)
         }
 
         shareButton.setOnClickListener {
