@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="ButtonStyle" >
+    <style name="ButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetTop">0dp</item> //несмотря на то, что  стиль кнопок унаследован от UnelevatedButton,
+        <item name="android:insetBottom">0dp</item> // без этих атрибутов у кнопки появляются отсутпы от границ View сверху и снизу
         <item name="android:backgroundTint">@color/white</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="cornerRadius">16dp</item>
@@ -32,7 +32,7 @@
         <item name="android:textFontWeight" tools:targetApi="p">400</item>
     </style>
 
-    <style name="search_activity_button">
+    <style name="search_activity_button" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">55.5dp</item>
         <item name="android:insetTop">0dp</item>
