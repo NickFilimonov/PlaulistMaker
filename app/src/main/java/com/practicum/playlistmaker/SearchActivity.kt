@@ -15,7 +15,7 @@ import kotlin.properties.Delegates.notNull
 
 class SearchActivity : AppCompatActivity() {
     // данный конструкт помогает отложить реализацию переменной
-    private var searchQuery by notNull<String>()
+    private var searchQuery by notNull<String>() //
 
     companion object {
         const val SEARCH_USER_INPUT = "SEARCH_USER_INPUT"
