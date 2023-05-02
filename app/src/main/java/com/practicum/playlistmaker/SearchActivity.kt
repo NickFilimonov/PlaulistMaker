@@ -15,14 +15,15 @@ import kotlin.properties.Delegates.notNull
 
 class SearchActivity : AppCompatActivity() {
     // данный конструкт помогает отложить реализацию переменной
-    private var searchQuery by notNull<String>() //
+    private var searchQuery by notNull<String>()
+    private lateinit var editText: EditText
 
     companion object {
         const val SEARCH_USER_INPUT = "SEARCH_USER_INPUT"
     }
     // сохраняем поисковой запрос
     override fun onSaveInstanceState(outState: Bundle) {
-        val editText = findViewById<EditText>(R.id.edit_text_search)
+//        val editText = findViewById<EditText>(R.id.edit_text_search)
         searchQuery = editText.text.toString()
         super.onSaveInstanceState(outState)
         outState.putString(SEARCH_USER_INPUT, searchQuery)
@@ -39,17 +40,21 @@ class SearchActivity : AppCompatActivity() {
 
         val clearButton = findViewById<ImageView>(R.id.clear_search_button)
         val editText = findViewById<EditText>(R.id.edit_text_search)
-        val libraryButton = findViewById<Button>(R.id.library_button_search_activity)
-        val settingsButton = findViewById<Button>(R.id.settings_button_search_activity)
+        val backButton = findViewById<ImageView>(R.id.back_button_search_activity)
+//        val libraryButton = findViewById<Button>(R.id.library_button_search_activity)
+//        val settingsButton = findViewById<Button>(R.id.settings_button_search_activity)
 
-        libraryButton.setOnClickListener {
-            val displayIntent = Intent(this, LibraryActivity::class.java)
-            startActivity(displayIntent)
-        }
-
-        settingsButton.setOnClickListener {
-            val displayIntent = Intent(this, SettingsActivity::class.java)
-            startActivity(displayIntent)
+//        libraryButton.setOnClickListener {
+//            val displayIntent = Intent(this, LibraryActivity::class.java)
+//            startActivity(displayIntent)
+//        }
+//
+//        settingsButton.setOnClickListener {
+//            val displayIntent = Intent(this, SettingsActivity::class.java)
+//            startActivity(displayIntent)
+//        }
+        backButton.setOnClickListener {
+            finish()
         }
 
         clearButton.setOnClickListener {
@@ -75,7 +80,7 @@ class SearchActivity : AppCompatActivity() {
 }
     // Метод делает видимой или не видимой кнопку clearButton
     // в зависимости от того есть или нет текст в поле editText
-    fun clearButtonVisibility(s: CharSequence?): Int {
+    private fun clearButtonVisibility(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
             View.GONE
         } else {

@@ -12,16 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="56dp">
 
-<!--        <ImageView-->
-<!--            android:id="@+id/back_button"-->
-<!--            android:foreground="?attr/selectableItemBackground"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@drawable/vector"-->
-<!--            android:layout_gravity="start"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:layout_marginStart="20dp"-->
-<!--            />-->
+        <ImageView
+            android:id="@+id/back_button_settings_activity"
+            android:foreground="?attr/selectableItemBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/vector"
+            android:layout_gravity="start"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -38,8 +38,10 @@
         android:layout_marginTop="24dp">
 
         <TextView
+            android:layout_marginLeft="@dimen/margin_horizontal"
+            android:layout_marginTop="21dp"
             android:text="@string/dark_theme"
-            style="@style/SettingsTextStyle" />
+            style="@style/primary_text" />
 
         <androidx.appcompat.widget.SwitchCompat
             android:layout_width="56dp"
@@ -47,7 +49,7 @@
             android:layout_gravity="end"
             android:layout_marginEnd="6dp"
             android:layout_marginTop="10dp"
-            style="@style/MySwitch"/>
+            style="@style/my_switch"/>
 
     </FrameLayout>
 
@@ -57,8 +59,10 @@
         android:id="@+id/share_button">
 
         <TextView
+            android:layout_marginLeft="@dimen/margin_horizontal"
+            android:layout_marginTop="21dp"
             android:text="@string/share_app"
-            style="@style/SettingsTextStyle"/>
+            style="@style/primary_text"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -76,8 +80,10 @@
         android:id="@+id/write_to_support_button">
 
         <TextView
+            android:layout_marginLeft="@dimen/margin_horizontal"
+            android:layout_marginTop="21dp"
             android:text="@string/mail_support"
-            style="@style/SettingsTextStyle"/>
+            style="@style/primary_text"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -119,8 +125,10 @@
         android:id="@+id/user_agreement_button">
 
         <TextView
+            android:layout_marginLeft="@dimen/margin_horizontal"
+            android:layout_marginTop="21dp"
             android:text="@string/terms_of_use"
-            style="@style/SettingsTextStyle"/>
+            style="@style/primary_text"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -132,43 +140,43 @@
 
     </FrameLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:orientation="horizontal">-->
 
-        <Button
-            android:id="@+id/search_button_settings_activity"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            style="@style/search_activity_button"
-            android:text="@string/search"
-            app:icon="@drawable/search"
-            android:layout_gravity="bottom"/>
+<!--        <Button-->
+<!--            android:id="@+id/search_button_settings_activity"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            style="@style/search_activity_button"-->
+<!--            android:text="@string/search"-->
+<!--            app:icon="@drawable/search"-->
+<!--            android:layout_gravity="bottom"/>-->
 
-        <Button
-            android:id="@+id/library_button_settings_activity"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            style="@style/search_activity_button"
-            android:text="@string/library"
-            app:icon="@drawable/library"
-            android:layout_gravity="bottom"/>
+<!--        <Button-->
+<!--            android:id="@+id/library_button_settings_activity"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            style="@style/search_activity_button"-->
+<!--            android:text="@string/library"-->
+<!--            app:icon="@drawable/library"-->
+<!--            android:layout_gravity="bottom"/>-->
 
-        <Button
-            android:id="@+id/settings_button_settings_activity"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            style="@style/search_activity_button"
-            android:text="@string/settings"
-            android:textColor="@color/main_activity_light"
-            app:icon="@drawable/settings"
-            app:iconTint = "@color/main_activity_light"
-            android:layout_gravity="bottom"/>
+<!--        <Button-->
+<!--            android:id="@+id/settings_button_settings_activity"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            style="@style/search_activity_button"-->
+<!--            android:text="@string/settings"-->
+<!--            android:textColor="@color/main_activity_light"-->
+<!--            app:icon="@drawable/settings"-->
+<!--            app:iconTint = "@color/main_activity_light"-->
+<!--            android:layout_gravity="bottom"/>-->
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
 </LinearLayout>

@@ -18,25 +18,33 @@
         android:textSize="@dimen/header_text" />
 
     <Button
-        style="@style/ButtonStyle"
+        style="@style/main_activity_button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/search_button"
         android:text="@string/search"
         android:layout_marginTop="40dp"
-        app:icon="@drawable/search"
-        />
+        app:icon="@drawable/search"/>
 
     <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/library_button"
         android:text="@string/library"
         app:icon="@drawable/library"
-        style="@style/ButtonStyle"/>
+        style="@style/main_activity_button"/>
 
     <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:id="@+id/settings_button"
         android:layout_marginBottom="28dp"
         android:text="@string/settings"
         app:icon="@drawable/settings"
-        style="@style/ButtonStyle"/>
+        style="@style/main_activity_button"/>
 
 </LinearLayout>
 
