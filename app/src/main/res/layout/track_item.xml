@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/trackLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="61dp"
+    android:orientation="horizontal"
+    android:background="?attr/colorSecondary">
+    
+    <ImageView
+        android:id="@+id/albums_cover"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="13dp"
+        android:background="?attr/colorSecondary"/>
+
+    <TextView
+        android:id="@+id/track_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginStart="66dp"
+        android:layout_marginEnd="44dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:singleLine="true"
+        style="@style/primary_text"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/track_name"
+        app:layout_constraintEnd_toEndOf="@+id/track_name"
+        app:layout_constraintTop_toBottomOf="@+id/track_name">
+
+        <TextView
+            android:id="@+id/band_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="11sp"
+            android:textColor="?attr/color"
+            style="@style/primary_text"/>
+
+        <ImageView
+            android:id="@+id/ellipse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/ellipse"/>
+
+        <TextView
+            android:id="@+id/track_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:textSize="11sp"
+            android:textColor="?attr/color"
+            style="@style/primary_text"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/vector_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:src="@drawable/arrow_forward"
+        android:layout_marginTop="23dp"
+        android:layout_marginEnd="20dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
