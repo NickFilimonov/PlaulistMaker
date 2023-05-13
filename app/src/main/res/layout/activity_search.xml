@@ -65,6 +65,18 @@
         android:src="@drawable/clear_search"
         android:visibility="gone"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_track"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="124dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        tools:listitem="@layout/track_item"
+        tools:itemCount="5"/>
+
 <!--    <ImageView-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="wrap_content"-->
