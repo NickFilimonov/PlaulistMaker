@@ -21,11 +21,10 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         bandName.text = item.artistName
         trackTime.text = item.trackTime
         Glide.with(itemView)
-        .load(item.artworkUrl100)
-        .placeholder(R.drawable.placeholder)
-        .centerCrop()
-        .transform(RoundedCorners(2))
-        .into(albumsCover)
-
+            .load(item.artworkUrl100)
+            .placeholder(R.drawable.placeholder)
+            .centerCrop()
+            .transform(RoundedCorners(2))
+            .into(albumsCover)
     }
 }
