@@ -13,7 +13,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.helper.widget.MotionPlaceholder
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import retrofit2.Call
@@ -45,12 +47,56 @@ class SearchActivity : AppCompatActivity() {
         searchQuery = savedInstanceState.getString(SEARCH_USER_INPUT,"")
     }
 
+    // Метод делает видимой / невидимой кнопку clearButton
+    // в зависимости от того есть или нет текст в поле editText
+    // метод возвращает количество последовательности символов
     private fun clearButtonVisibility(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
             View.GONE
         } else {
             View.VISIBLE
         }
+    }
+
+    private fun sendRequestToServer() {
+        rvSearchTrack.visibility = View.VISIBLE
+        nothingFoundPlaceholder.visibility = View.GONE
+        communicationProblemPlaceholder.visibility = View.GONE
+        if (editText.text.isNotEmpty()) { // проверяем, чтобы edittext не был пустым
+            iTunesService.findTrack(editText.text.toString()).enqueue(object : Callback<TrackResponce> { // вызываем метод findTrack() у iTunesService, и передаем туда текст из edittext
+                override fun onResponse(call: Call<TrackResponce>,                                      // метод enqueue() передает наш запрос на сервер (метод retrofit)
+                                        response: Response<TrackResponce>) { // метод onResponse() вызывается, когда сервер дал ответе(response) на запрос
+                    if (response.code() == 200) { // code() вызывает код http-статуса, 200 - успех, запрос корректен, сервер вернул ответ
+                        tracks.clear() // clear() отчищвет recyclerview от предъидущего списка, без этой строчки отображение нового списка не происходит
+                        if (response.body()?.results?.isNotEmpty() == true) { // если ответ(response)  в виде объекта, который указали в Call (body() возвращает) не пустой
+                            tracks.addAll(response.body()?.results!!) // добавляем все найденные треки в спсиок addAll() для отображения на экране
+                            adapter.notifyDataSetChanged() // уведомляем адаптер об изменении набора данных, перерисовавается весь набор, это не оптимально
+                        } else {
+                            tracks.clear()
+                            rvSearchTrack.visibility = View.GONE
+                            nothingFoundPlaceholder.visibility = View.VISIBLE// показываем плейсхолднер nothing_found
+                        }
+                    } else {
+                        tracks.clear()
+                        rvSearchTrack.visibility = View.GONE
+                        communicationProblemPlaceholder.visibility = View.VISIBLE// показываем плейсхолднер communication_problem
+                    }
+                }
+
+                override fun onFailure(call: Call<TrackResponce>, t: Throwable) { // метод вызывается если не получилось установить соединение с сервером
+                    tracks.clear()
+                    rvSearchTrack.visibility = View.GONE
+                    communicationProblemPlaceholder.visibility = View.VISIBLE // показываем плейсхолднер communication_problem
+                }
+
+            })
+        }
+    }
+
+    private fun closeKeyboard() {
+        val inputMethodManager =
+            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)  //убираем клавиатуру
     }
 
     private val iTunesBaseUrl = "https://itunes.apple.com"
@@ -66,10 +112,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var editText: EditText
     private lateinit var backButton: ImageView
     private lateinit var rvSearchTrack: RecyclerView
-    private lateinit var nothingFoundImage: ImageView
-    private lateinit var nothingFoundText: TextView
-    private lateinit var communicationProblemImage: ImageView
-    private lateinit var communicationProblemText: TextView
+    private lateinit var nothingFoundPlaceholder: LinearLayout
+    private lateinit var communicationProblemPlaceholder: LinearLayout
     private lateinit var communicationProblemButton: Button
 
     private val tracks = ArrayList<Track>()
@@ -84,10 +128,8 @@ class SearchActivity : AppCompatActivity() {
         editText = findViewById(R.id.edit_text_search)
         backButton = findViewById(R.id.back_button_search_activity)
         rvSearchTrack = findViewById(R.id.rv_search_track)
-        nothingFoundImage = findViewById(R.id.nothing_found_image)
-        nothingFoundText = findViewById(R.id.nothing_found_text)
-        communicationProblemImage = findViewById(R.id.communication_problem_image)
-        communicationProblemText = findViewById(R.id.communication_problem_text)
+        nothingFoundPlaceholder = findViewById(R.id.nothing_found_placeholder)
+        communicationProblemPlaceholder = findViewById(R.id.communication_problem_placeholder)
         communicationProblemButton = findViewById(R.id.update_button)
 
         backButton.setOnClickListener {
@@ -96,9 +138,11 @@ class SearchActivity : AppCompatActivity() {
 
         clearButton.setOnClickListener {
             editText.setText("") //стираем текст по нажатию на clearButton
-            val inputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)  //убираем клавиатуру
+            closeKeyboard()
+            tracks.clear()
+            rvSearchTrack.visibility = View.GONE
+            nothingFoundPlaceholder.visibility = View.GONE
+            communicationProblemPlaceholder.visibility = View.GONE
         }
 
         adapter.tracks = tracks
@@ -110,40 +154,15 @@ class SearchActivity : AppCompatActivity() {
         // добавлением в тег edittext (в xml разметке) атрибута imeOptions="actionSearch"
         editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                if (editText.text.isNotEmpty()) { // проверяем, чтобы edittext не был пустым
-                    iTunesService.findTrack(editText.text.toString()).enqueue(object : Callback<TrackResponce> { // вызываем метод findTrack() у iTunesService, и передаем туда текст из edittext
-                        override fun onResponse(call: Call<TrackResponce>,                                      // метод enqueue() передает наш запрос на сервер (метод retrofit)
-                                                response: Response<TrackResponce>) { // метод onResponse() вызывается, когда сервер дал ответе(response) на запрос
-                            if (response.code() == 200) { // code() вызывает код http-статуса, 200 - успех, запрос корректен, сервер вернул ответ
-                                tracks.clear() // clear() отчищвет recyclerview от предъидущего списка, без этой строчки отображение нового списка не происходит
-                                if (response.body()?.results?.isNotEmpty() == true) { // если ответ(response)  в виде объекта, который указали в Call (body() возвращает) не пустой
-                                    tracks.addAll(response.body()?.results!!) // добавляем все найденные треки в спсиок addAll() для отображения на экране
-                                    adapter.notifyDataSetChanged() // уведомляем адаптер об изменении набора данных, перерисовавается весь набор, это не оптимально
-                                }
-                                if (tracks.isEmpty()) { // если список треков, отображающий результат поиска пуст..
-                                    tracks.clear()
-                                    nothingFoundImage.visibility = View.VISIBLE
-                                    nothingFoundText.visibility = View.VISIBLE// показываем плейсхолднер nothing_found
-                                }
-                            } else {
-                                tracks.clear()
-                                communicationProblemImage.visibility = View.VISIBLE
-                                communicationProblemText.visibility = View.VISIBLE
-                                communicationProblemButton.visibility = View.VISIBLE// показываем плейсхолднер communication_problem
-                            }
-                        }
-
-                        override fun onFailure(call: Call<TrackResponce>, t: Throwable) { // метод вызывается если не получилось установить соединение с сервером
-                            communicationProblemImage.visibility = View.VISIBLE
-                            communicationProblemText.visibility = View.VISIBLE
-                            communicationProblemButton.visibility = View.VISIBLE // показываем плейсхолднер communication_problem
-                        }
-
-                    })
-                }
+                closeKeyboard()
+                sendRequestToServer()
                 true
             }
             false
+        }
+
+        communicationProblemButton.setOnClickListener {
+            sendRequestToServer()
         }
 
         val searchTextWatcher = object : TextWatcher {
@@ -160,9 +179,6 @@ class SearchActivity : AppCompatActivity() {
         editText.addTextChangedListener(searchTextWatcher)
     }
 }
-// Метод делает видимой / невидимой кнопку clearButton
-// в зависимости от того есть или нет текст в поле editText
-// метод возвращает количество последовательности символов
 
 //        логика для макета дизайна, с кнопками для перехода между экранами внизу активити
 //        val libraryButton = findViewById<Button>(R.id.library_button_search_activity)
