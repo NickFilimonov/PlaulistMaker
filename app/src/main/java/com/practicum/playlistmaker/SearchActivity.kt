@@ -32,6 +32,7 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_USER_INPUT = "SEARCH_USER_INPUT"
+        const val ITUNES_BASE_URL = "https://itunes.apple.com"
     }
 
     // метод сохраняет поисковой запрос
@@ -99,10 +100,8 @@ class SearchActivity : AppCompatActivity() {
         inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)  //убираем клавиатуру
     }
 
-    private val iTunesBaseUrl = "https://itunes.apple.com"
-
     private val retrofit = Retrofit.Builder()
-        .baseUrl(iTunesBaseUrl)
+        .baseUrl(ITUNES_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
