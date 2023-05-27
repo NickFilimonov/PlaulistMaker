@@ -14,8 +14,6 @@
     <string name="practicum_offer">https://yandex.ru/legal/practicum_offer/</string>
     <string name="email_support">nfilimonov1@gmail.com</string>
     <string name="nothing_found">Ничего не нашлось</string>
-    <string name="communication_problem">Проблемы со связью
-
-        Загрузка не удалась.Проверьте подключение к интернету</string>
+    <string name="communication_problem">Проблемы со связью\n\nЗагрузка не удалась.Проверьте подключение к интернету</string>
     <string name="update">Обновить</string>
 </resources>
