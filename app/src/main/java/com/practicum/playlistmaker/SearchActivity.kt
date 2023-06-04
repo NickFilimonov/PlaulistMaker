@@ -2,7 +2,6 @@ package com.practicum.playlistmaker
 
 import Track
 import android.content.Context
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -14,8 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.constraintlayout.helper.widget.MotionPlaceholder
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import retrofit2.Call
@@ -24,6 +22,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.properties.Delegates.notNull
+
+const val TRACKS_PREFERENCES = "tracks_preferences"
+const val NEW_TRACK_KEY = "key_for_new_track"
 
 class SearchActivity : AppCompatActivity() {
     // данный конструкт помогает отложить реализацию переменной
@@ -130,6 +131,9 @@ class SearchActivity : AppCompatActivity() {
         nothingFoundPlaceholder = findViewById(R.id.nothing_found_placeholder)
         communicationProblemPlaceholder = findViewById(R.id.communication_problem_placeholder)
         communicationProblemButton = findViewById(R.id.update_button)
+
+        val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
+        // метод(sharedPreferences, track: Track)
 
         backButton.setOnClickListener {
             finish()

@@ -75,7 +75,55 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:orientation="vertical"
         tools:listitem="@layout/track_item"
-        tools:itemCount="5"/>
+        tools:itemCount="5"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/search_history_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="150dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_history"
+            android:textSize="19sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="0dp"
+            style="@style/text_header"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_search_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            tools:listitem="@layout/track_item"
+            tools:itemCount="5"/>
+        
+        <Button
+            android:id="@+id/search_history_button"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            app:cornerRadius="54dp"
+            android:backgroundTint="?attr/colorOnPrimary"
+            android:text="Очистить историю"
+            android:maxLines="1"
+            android:textColor="?attr/colorSecondary"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            style="@style/primary_text"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/nothing_found_placeholder"
