@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import Track
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -8,11 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class TrackAdapter(val clickListener: TrackClickListener) : RecyclerView.Adapter<TrackViewHolder> () {
 
-    interface TrackClickListener {
-        fun onTrackClick(track: Track) {
-            Toast.makeText(this, "Нажали на трек ${track.trackName}", Toast.LENGTH_SHORT)
-                .show()
-        }
+    fun interface TrackClickListener {
+        fun onTrackClick(track: Track) : ArrayList<Track>
     }
 
     var tracks = ArrayList<Track>()

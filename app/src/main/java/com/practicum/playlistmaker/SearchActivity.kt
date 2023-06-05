@@ -9,10 +9,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -25,8 +22,9 @@ import kotlin.properties.Delegates.notNull
 
 const val TRACKS_PREFERENCES = "tracks_preferences"
 const val NEW_TRACK_KEY = "key_for_new_track"
+const val   TRACKS_LIST_KEY = "key_for_tracks_list"
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
     // данный конструкт помогает отложить реализацию переменной
     // переменная searchQuery хранит пользовательский ввод в edittext
     private var searchQuery by notNull<String>()
@@ -72,7 +70,7 @@ class SearchActivity : AppCompatActivity() {
                         tracks.clear() // clear() отчищвет recyclerview от предъидущего списка, без этой строчки отображение нового списка не происходит
                         if (response.body()?.results?.isNotEmpty() == true) { // если ответ(response)  в виде объекта, который указали в Call (body() возвращает) не пустой
                             tracks.addAll(response.body()?.results!!) // добавляем все найденные треки в спсиок addAll() для отображения на экране
-                            adapter.notifyDataSetChanged() // уведомляем адаптер об изменении набора данных, перерисовавается весь набор, это не оптимально
+                            trackAdapter.notifyDataSetChanged() // уведомляем адаптер об изменении набора данных, перерисовавается весь набор, это не оптимально
                         } else {
                             tracks.clear()
                             rvSearchTrack.visibility = View.GONE
@@ -115,10 +113,56 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var nothingFoundPlaceholder: LinearLayout
     private lateinit var communicationProblemPlaceholder: LinearLayout
     private lateinit var communicationProblemButton: Button
+    private lateinit var rvSearchHistory: RecyclerView
 
     private val tracks = ArrayList<Track>()
 
-    private val adapter = TrackAdapter()
+    private val searchHistory = ArrayList<Track>()
+
+    private val trackAdapter = TrackAdapter(this)
+
+    private val searchHistoryAdapter = SearchHistoryAdapter()
+
+    // метод дессириализует массив объектов Fact (в Shared Preference они хранятся в виде json строки)
+    private fun createFactsListFromJson(json: String?): Array<Track> {
+        return Gson().fromJson(json, Array<Track>::class.java)
+    }
+
+    // метод серриализует массив объектов Fact (переводит в формат json)
+    private fun createJsonFromFactsList(facts: Array<Track>): String {
+        return Gson().toJson(facts)
+    }
+
+    override fun onTrackClick(track: Track): ArrayList<Track> {
+//        Toast.makeText(this, "Нажали на трек ${track.trackId}", Toast.LENGTH_SHORT)
+//            .show()
+
+        searchHistory.add(track)
+
+        return searchHistory
+
+//        val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
+//
+//        val searchHistoryTracks = sharedPreferences.getString(TRACKS_LIST_KEY, null)
+//
+//        val searchHistoryArray: Array<Track> = createFactsListFromJson(searchHistoryTracks)
+//
+//        val searchHistoryMutableList: MutableList<Track> = searchHistoryArray.toMutableList()
+//
+//        searchHistoryMutableList.add(0,track)
+
+//        for (i in searchHistoryMutableList.indices) {
+//            if (searchHistoryMutableList[i].trackId == track.trackId) {
+//                searchHistoryMutableList.removeAt(i)
+//                searchHistoryMutableList.add(0, track)
+//                break
+//            } else searchHistoryMutableList.add(0, track)
+//        }
+
+//        sharedPreferences.edit()
+//            .putString(TRACKS_LIST_KEY, createJsonFromFactsList(searchHistoryMutableList.toTypedArray()))
+//            .apply()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,9 +175,18 @@ class SearchActivity : AppCompatActivity() {
         nothingFoundPlaceholder = findViewById(R.id.nothing_found_placeholder)
         communicationProblemPlaceholder = findViewById(R.id.communication_problem_placeholder)
         communicationProblemButton = findViewById(R.id.update_button)
+        rvSearchHistory = findViewById(R.id.rv_search_history)
+
+
 
         val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
-        // метод(sharedPreferences, track: Track)
+
+        sharedPreferences.edit()
+            .putString(TRACKS_LIST_KEY, createJsonFromFactsList(onTrackClick().toTypedArray()))
+            .apply()
+
+        //val searchHistoryTracks = sharedPreferences.getString(TRACKS_LIST_KEY, null)
+
 
         backButton.setOnClickListener {
             finish()
@@ -148,9 +201,13 @@ class SearchActivity : AppCompatActivity() {
             communicationProblemPlaceholder.visibility = View.GONE
         }
 
-        adapter.tracks = tracks
+        trackAdapter.tracks = tracks
 
-        rvSearchTrack.adapter = adapter
+        rvSearchTrack.adapter = trackAdapter
+
+        searchHistoryAdapter.searchHistory = searchHistory
+
+        rvSearchHistory.adapter = searchHistoryAdapter
 
         // обработчик нажатия для кнопки выпадающей клавиатуры
         // IME_ACTION_SEARCH - кнопка поиск (добавляется на клавиатуру
@@ -181,6 +238,7 @@ class SearchActivity : AppCompatActivity() {
 
         editText.addTextChangedListener(searchTextWatcher)
     }
+
 }
 
 //        логика для макета дизайна, с кнопками для перехода между экранами внизу активити
