@@ -2,23 +2,26 @@ package com.practicum.playlistmaker
 
 import Track
 import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 
-class SearchHistory(sharedPreferences: SharedPreferences) {
+object SearchHistory {
 
-//    val searchHistoryTracks = sharedPreferences.getString(TRACKS_LIST_KEY, null)
-//
-//    private fun anything(searchHistoryTracks: String): Array<Track> {
-//
-//        createFactsListFromJson(searchHistoryTracks) // дессериализуем строку json из shPref в массив объектов Track
-//
-//
-//    }
-//
-//    private fun createFactsListFromJson(json: String): Array<Track> {
-//        return Gson().fromJson(json, Array<Track>::class.java)
-//    }
+     fun addNewTrack(track: Track, searchedTrackList: MutableList<Track>): MutableList<Track> {
 
+        for (i in searchedTrackList.indices) {
+            if (searchedTrackList[i].trackId == track.trackId)
+                searchedTrackList.removeAt(i)
+        }
+         searchedTrackList.add(0, track)
 
+        if (searchedTrackList.size > 10) {
+            for (i in 10 until searchedTrackList.size) {
+                searchedTrackList.removeAt(i)
+            }
+        }
+
+        return searchedTrackList
+    }
 
 }

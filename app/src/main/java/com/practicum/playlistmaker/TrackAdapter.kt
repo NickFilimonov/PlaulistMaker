@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 class TrackAdapter(val clickListener: TrackClickListener) : RecyclerView.Adapter<TrackViewHolder> () {
 
     fun interface TrackClickListener {
-        fun onTrackClick(track: Track) : ArrayList<Track>
+        fun onTrackClick(track: Track)
     }
 
     var tracks = ArrayList<Track>()

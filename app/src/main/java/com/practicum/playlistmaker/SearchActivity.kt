@@ -114,10 +114,9 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
     private lateinit var communicationProblemPlaceholder: LinearLayout
     private lateinit var communicationProblemButton: Button
     private lateinit var rvSearchHistory: RecyclerView
+    private lateinit var searchHistoryLayout: LinearLayout
 
     private val tracks = ArrayList<Track>()
-
-    private val searchHistory = ArrayList<Track>()
 
     private val trackAdapter = TrackAdapter(this)
 
@@ -133,35 +132,20 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         return Gson().toJson(facts)
     }
 
-    override fun onTrackClick(track: Track): ArrayList<Track> {
-//        Toast.makeText(this, "Нажали на трек ${track.trackId}", Toast.LENGTH_SHORT)
-//            .show()
+    private val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE) // создаю экземпляр SharedPreferences
 
-        searchHistory.add(track)
+    override fun onTrackClick(track: Track) {
 
-        return searchHistory
+        val searchedTrack = sharedPreferences.getString(TRACKS_LIST_KEY, null)
 
-//        val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
-//
-//        val searchHistoryTracks = sharedPreferences.getString(TRACKS_LIST_KEY, null)
-//
-//        val searchHistoryArray: Array<Track> = createFactsListFromJson(searchHistoryTracks)
-//
-//        val searchHistoryMutableList: MutableList<Track> = searchHistoryArray.toMutableList()
-//
-//        searchHistoryMutableList.add(0,track)
+         val searchedTrackList: MutableList<Track> = createFactsListFromJson(searchedTrack).toMutableList()
 
-//        for (i in searchHistoryMutableList.indices) {
-//            if (searchHistoryMutableList[i].trackId == track.trackId) {
-//                searchHistoryMutableList.removeAt(i)
-//                searchHistoryMutableList.add(0, track)
-//                break
-//            } else searchHistoryMutableList.add(0, track)
-//        }
+        val searchedTrackListNew = SearchHistory.addNewTrack(track, searchedTrackList)
 
-//        sharedPreferences.edit()
-//            .putString(TRACKS_LIST_KEY, createJsonFromFactsList(searchHistoryMutableList.toTypedArray()))
-//            .apply()
+        sharedPreferences.edit()
+            .putString(TRACKS_LIST_KEY, createJsonFromFactsList(searchedTrackListNew.toTypedArray()))
+            .apply()
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -176,17 +160,20 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         communicationProblemPlaceholder = findViewById(R.id.communication_problem_placeholder)
         communicationProblemButton = findViewById(R.id.update_button)
         rvSearchHistory = findViewById(R.id.rv_search_history)
+        searchHistoryLayout = findViewById(R.id.search_history_layout)
 
 
+        val searchedTrack = sharedPreferences.getString(TRACKS_LIST_KEY, null)
 
-        val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
+        if (searchedTrack != null) {
+            searchHistoryLayout.visibility = View.VISIBLE
+            searchHistoryAdapter.searchHistory.addAll(createFactsListFromJson(searchedTrack))
+            rvSearchHistory.adapter = searchHistoryAdapter
+        }
 
-        sharedPreferences.edit()
-            .putString(TRACKS_LIST_KEY, createJsonFromFactsList(onTrackClick().toTypedArray()))
-            .apply()
-
-        //val searchHistoryTracks = sharedPreferences.getString(TRACKS_LIST_KEY, null)
-
+        editText.setOnFocusChangeListener { v, hasFocus ->
+            searchHistoryLayout.visibility = if (hasFocus && editText.text.isEmpty()) View.VISIBLE else View.GONE
+        }
 
         backButton.setOnClickListener {
             finish()
@@ -205,9 +192,6 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
 
         rvSearchTrack.adapter = trackAdapter
 
-        searchHistoryAdapter.searchHistory = searchHistory
-
-        rvSearchHistory.adapter = searchHistoryAdapter
 
         // обработчик нажатия для кнопки выпадающей клавиатуры
         // IME_ACTION_SEARCH - кнопка поиск (добавляется на клавиатуру
@@ -231,12 +215,22 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = clearButtonVisibility(s)
+                searchHistoryLayout.visibility = if (editText.hasFocus() && s?.isEmpty() == true) View.VISIBLE else View.GONE
             }
 
             override fun afterTextChanged(s: Editable?) {}
         }
 
         editText.addTextChangedListener(searchTextWatcher)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
+        sharedPreferences.edit()
+            .putString(TRACKS_LIST_KEY, createJsonFromFactsList(searchHistoryAdapter.searchHistory.toTypedArray()))
+            .apply()
     }
 
 }
