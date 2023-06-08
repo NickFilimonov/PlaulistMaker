@@ -205,6 +205,8 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
 
         rvSearchTrack.adapter = trackAdapter
 
+        rvSearchHistory.adapter = searchHistoryAdapter
+
 
         // обработчик нажатия для кнопки выпадающей клавиатуры
         // IME_ACTION_SEARCH - кнопка поиск (добавляется на клавиатуру
