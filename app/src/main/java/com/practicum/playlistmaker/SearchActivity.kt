@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import Track
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -22,7 +23,7 @@ import kotlin.properties.Delegates.notNull
 
 const val TRACKS_PREFERENCES = "tracks_preferences"
 const val NEW_TRACK_KEY = "key_for_new_track"
-const val   TRACKS_LIST_KEY = "key_for_tracks_list"
+const val TRACKS_LIST_KEY = "key_for_tracks_list"
 
 class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
     // данный конструкт помогает отложить реализацию переменной
@@ -115,6 +116,8 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
     private lateinit var communicationProblemButton: Button
     private lateinit var rvSearchHistory: RecyclerView
     private lateinit var searchHistoryLayout: LinearLayout
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var searchedTrack: String
 
     private val tracks = ArrayList<Track>()
 
@@ -123,29 +126,25 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
     private val searchHistoryAdapter = SearchHistoryAdapter()
 
     // метод дессириализует массив объектов Fact (в Shared Preference они хранятся в виде json строки)
-    private fun createFactsListFromJson(json: String?): Array<Track> {
+    private fun createTrackListFromJson(json: String?): Array<Track> {
         return Gson().fromJson(json, Array<Track>::class.java)
     }
 
-    // метод серриализует массив объектов Fact (переводит в формат json)
-    private fun createJsonFromFactsList(facts: Array<Track>): String {
-        return Gson().toJson(facts)
-    }
+//    // метод серриализует массив объектов Fact (переводит в формат json)
+//    private fun createJsonFromTrackList(facts: Array<Track>): String {
+//        return Gson().toJson(facts)
+//    }
 
-    private val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE) // создаю экземпляр SharedPreferences
 
     override fun onTrackClick(track: Track) {
 
-        val searchedTrack = sharedPreferences.getString(TRACKS_LIST_KEY, null)
+        val searchHistory = SearchHistory(sharedPreferences)
 
-         val searchedTrackList: MutableList<Track> = createFactsListFromJson(searchedTrack).toMutableList()
-
-        val searchedTrackListNew = SearchHistory.addNewTrack(track, searchedTrackList)
+        val searchedTrack = searchHistory.addNewTrack(track)
 
         sharedPreferences.edit()
-            .putString(TRACKS_LIST_KEY, createJsonFromFactsList(searchedTrackListNew.toTypedArray()))
+            .putString(TRACKS_LIST_KEY, searchedTrack)
             .apply()
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -162,14 +161,28 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         rvSearchHistory = findViewById(R.id.rv_search_history)
         searchHistoryLayout = findViewById(R.id.search_history_layout)
 
+        sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
 
         val searchedTrack = sharedPreferences.getString(TRACKS_LIST_KEY, null)
 
         if (searchedTrack != null) {
             searchHistoryLayout.visibility = View.VISIBLE
-            searchHistoryAdapter.searchHistory.addAll(createFactsListFromJson(searchedTrack))
-            rvSearchHistory.adapter = searchHistoryAdapter
+            searchHistoryAdapter.searchHistory.addAll(createTrackListFromJson(searchedTrack))
         }
+
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            if (key == NEW_TRACK_KEY) {
+                val track = sharedPreferences?.getString(NEW_TRACK_KEY, null)
+                if (track != null) {
+                    searchHistoryAdapter.searchHistory.addAll(createTrackListFromJson(searchedTrack))
+                    searchHistoryAdapter.notifyItemInserted(0)
+                }
+            }
+        }
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+
+
 
         editText.setOnFocusChangeListener { v, hasFocus ->
             searchHistoryLayout.visibility = if (hasFocus && editText.text.isEmpty()) View.VISIBLE else View.GONE
@@ -224,14 +237,14 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         editText.addTextChangedListener(searchTextWatcher)
     }
 
-    override fun onStop() {
-        super.onStop()
-
-        val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
-        sharedPreferences.edit()
-            .putString(TRACKS_LIST_KEY, createJsonFromFactsList(searchHistoryAdapter.searchHistory.toTypedArray()))
-            .apply()
-    }
+//    override fun onStop() {
+//        super.onStop()
+//
+//        val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
+//        sharedPreferences.edit()
+//            .putString(TRACKS_LIST_KEY, createJsonFromTrackList(searchHistoryAdapter.searchHistory.toTypedArray()))
+//            .apply()
+//    }
 
 }
 
