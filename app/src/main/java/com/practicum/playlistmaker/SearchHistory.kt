@@ -1,35 +1,39 @@
 package com.practicum.playlistmaker
 
 import Track
+import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 
-class SearchHistory (sharedPreferences: SharedPreferences) {
+class SearchHistory (val sharedPreferences: SharedPreferences) {
 
-    val searchedTrack = sharedPreferences.getString(TRACKS_LIST_KEY, null)
 
-    lateinit var searchedTrackList: MutableList<Track>
+    val searchedTrackList = mutableListOf<Track>()
 
-    fun addNewTrack(track: Track): String {
-
-        if (searchedTrack != null) searchedTrackList = createTrackListFromJson(searchedTrack).toMutableList()
-
-        for (i in searchedTrackList.indices) {
-            if (searchedTrackList[i].trackId == track.trackId)
-                searchedTrackList.removeAt(i)
+    init {
+        val searchedTrack = sharedPreferences.getString(TRACKS_LIST_KEY, "") ?: ""
+        if (searchedTrack.isNotEmpty()) {
+            searchedTrackList.addAll(createTrackListFromJson(searchedTrack))
         }
-        searchedTrackList.add(0, track)
-
-        if (searchedTrackList.size > 10) {
-            for (i in 10 until searchedTrackList.size) {
-                searchedTrackList.removeAt(i)
-            }
-        }
-
-        return createJsonFromTrackList(searchedTrackList.toTypedArray())
     }
 
+    fun addNewTrack(track: Track) {
+
+        if (searchedTrackList.contains(track)) searchedTrackList.remove(track)
+
+        searchedTrackList.add(0, track)
+
+        if (searchedTrackList.size == 11) searchedTrackList.removeAt(10)
+
+        sharedPreferences.edit()
+            .putString(TRACKS_LIST_KEY, createJsonFromTrackList(searchedTrackList.toTypedArray())) // отдает данные adapter, а createJsonFromFactsList() их серриализует
+            .apply()
+    }
+
+    fun clearHistory() {
+        searchedTrackList.clear()
+    }
 
     // метод дессириализует массив объектов Fact (в Shared Preference они хранятся в виде json строки)
     private fun createTrackListFromJson(json: String?): Array<Track> {

@@ -21,84 +21,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.properties.Delegates.notNull
 
-const val TRACKS_PREFERENCES = "tracks_preferences"
-const val NEW_TRACK_KEY = "key_for_new_track"
-const val TRACKS_LIST_KEY = "key_for_tracks_list"
-
 class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
     // данный конструкт помогает отложить реализацию переменной
     // переменная searchQuery хранит пользовательский ввод в edittext
     private var searchQuery by notNull<String>()
-
-    companion object {
-        const val SEARCH_USER_INPUT = "SEARCH_USER_INPUT"
-        const val ITUNES_BASE_URL = "https://itunes.apple.com"
-    }
-
-    // метод сохраняет поисковой запрос
-    override fun onSaveInstanceState(outState: Bundle) {
-        searchQuery = editText.text.toString()
-        super.onSaveInstanceState(outState)
-        outState.putString(SEARCH_USER_INPUT, searchQuery)
-    }
-
-    // метод восстанавливает поисковой запрос после пересоздания активити
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchQuery = savedInstanceState.getString(SEARCH_USER_INPUT,"")
-    }
-
-    // Метод делает видимой / невидимой кнопку clearButton
-    // в зависимости от того есть или нет текст в поле editText
-    // метод возвращает количество последовательности символов
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
-    }
-
-    private fun sendRequestToServer() {
-        rvSearchTrack.visibility = View.VISIBLE
-        nothingFoundPlaceholder.visibility = View.GONE
-        communicationProblemPlaceholder.visibility = View.GONE
-        if (editText.text.isNotEmpty()) { // проверяем, чтобы edittext не был пустым
-            iTunesService.findTrack(editText.text.toString()).enqueue(object : Callback<TrackResponce> { // вызываем метод findTrack() у iTunesService, и передаем туда текст из edittext
-                override fun onResponse(call: Call<TrackResponce>,                                      // метод enqueue() передает наш запрос на сервер (метод retrofit)
-                                        response: Response<TrackResponce>) { // метод onResponse() вызывается, когда сервер дал ответе(response) на запрос
-                    if (response.code() == 200) { // code() вызывает код http-статуса, 200 - успех, запрос корректен, сервер вернул ответ
-                        tracks.clear() // clear() отчищвет recyclerview от предъидущего списка, без этой строчки отображение нового списка не происходит
-                        if (response.body()?.results?.isNotEmpty() == true) { // если ответ(response)  в виде объекта, который указали в Call (body() возвращает) не пустой
-                            tracks.addAll(response.body()?.results!!) // добавляем все найденные треки в спсиок addAll() для отображения на экране
-                            trackAdapter.notifyDataSetChanged() // уведомляем адаптер об изменении набора данных, перерисовавается весь набор, это не оптимально
-                        } else {
-                            tracks.clear()
-                            rvSearchTrack.visibility = View.GONE
-                            nothingFoundPlaceholder.visibility = View.VISIBLE// показываем плейсхолднер nothing_found
-                        }
-                    } else {
-                        tracks.clear()
-                        rvSearchTrack.visibility = View.GONE
-                        communicationProblemPlaceholder.visibility = View.VISIBLE// показываем плейсхолднер communication_problem
-                    }
-                }
-
-                override fun onFailure(call: Call<TrackResponce>, t: Throwable) { // метод вызывается если не получилось установить соединение с сервером
-                    tracks.clear()
-                    rvSearchTrack.visibility = View.GONE
-                    communicationProblemPlaceholder.visibility = View.VISIBLE // показываем плейсхолднер communication_problem
-                }
-
-            })
-        }
-    }
-
-    private fun closeKeyboard() {
-        val inputMethodManager =
-            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-        inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)  //убираем клавиатуру
-    }
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(ITUNES_BASE_URL)
@@ -118,6 +44,8 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
     private lateinit var searchHistoryLayout: LinearLayout
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var searchedTrack: String
+    private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
+    private lateinit var clearSearchHistoryButton: Button
 
     private val tracks = ArrayList<Track>()
 
@@ -130,21 +58,12 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         return Gson().fromJson(json, Array<Track>::class.java)
     }
 
-//    // метод серриализует массив объектов Fact (переводит в формат json)
-//    private fun createJsonFromTrackList(facts: Array<Track>): String {
-//        return Gson().toJson(facts)
-//    }
-
-
     override fun onTrackClick(track: Track) {
 
         val searchHistory = SearchHistory(sharedPreferences)
 
-        val searchedTrack = searchHistory.addNewTrack(track)
+        searchHistory.addNewTrack(track)
 
-        sharedPreferences.edit()
-            .putString(TRACKS_LIST_KEY, searchedTrack)
-            .apply()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -160,8 +79,13 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         communicationProblemButton = findViewById(R.id.update_button)
         rvSearchHistory = findViewById(R.id.rv_search_history)
         searchHistoryLayout = findViewById(R.id.search_history_layout)
+        clearSearchHistoryButton = findViewById(R.id.search_history_button)
 
         sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
+
+//        sharedPreferences.edit()
+//            .clear()
+//            .apply()
 
         val searchedTrack = sharedPreferences.getString(TRACKS_LIST_KEY, null)
 
@@ -170,19 +94,25 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
             searchHistoryAdapter.searchHistory.addAll(createTrackListFromJson(searchedTrack))
         }
 
-        val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
-            if (key == NEW_TRACK_KEY) {
-                val track = sharedPreferences?.getString(NEW_TRACK_KEY, null)
-                if (track != null) {
+        listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            if (key == TRACKS_LIST_KEY) {
+                val tracks = sharedPreferences?.getString(TRACKS_LIST_KEY, null)
+                if (tracks != null) {
+                    val searchHistory = SearchHistory(sharedPreferences)
+                    searchHistory.clearHistory()
                     searchHistoryAdapter.searchHistory.addAll(createTrackListFromJson(searchedTrack))
-                    searchHistoryAdapter.notifyItemInserted(0)
+                    searchHistoryAdapter.notifyDataSetChanged()
                 }
             }
         }
 
+        clearSearchHistoryButton.setOnClickListener {
+            searchHistoryLayout.visibility = View.GONE
+            val searchHistory = SearchHistory(sharedPreferences)
+            searchHistory.clearHistory()
+        }
+
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
-
-
 
         editText.setOnFocusChangeListener { v, hasFocus ->
             searchHistoryLayout.visibility = if (hasFocus && editText.text.isEmpty()) View.VISIBLE else View.GONE
@@ -239,16 +169,79 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         editText.addTextChangedListener(searchTextWatcher)
     }
 
-//    override fun onStop() {
-//        super.onStop()
-//
-//        val sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
-//        sharedPreferences.edit()
-//            .putString(TRACKS_LIST_KEY, createJsonFromTrackList(searchHistoryAdapter.searchHistory.toTypedArray()))
-//            .apply()
-//    }
+    private fun closeKeyboard() {
+        val inputMethodManager =
+            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+        inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)  //убираем клавиатуру
+    }
 
+    private fun sendRequestToServer() {
+        rvSearchTrack.visibility = View.VISIBLE
+        nothingFoundPlaceholder.visibility = View.GONE
+        communicationProblemPlaceholder.visibility = View.GONE
+        if (editText.text.isNotEmpty()) { // проверяем, чтобы edittext не был пустым
+            iTunesService.findTrack(editText.text.toString()).enqueue(object : Callback<TrackResponce> { // вызываем метод findTrack() у iTunesService, и передаем туда текст из edittext
+                override fun onResponse(call: Call<TrackResponce>,                                      // метод enqueue() передает наш запрос на сервер (метод retrofit)
+                                        response: Response<TrackResponce>) { // метод onResponse() вызывается, когда сервер дал ответе(response) на запрос
+                    if (response.code() == 200) { // code() вызывает код http-статуса, 200 - успех, запрос корректен, сервер вернул ответ
+                        tracks.clear() // clear() отчищвет recyclerview от предъидущего списка, без этой строчки отображение нового списка не происходит
+                        if (response.body()?.results?.isNotEmpty() == true) { // если ответ(response)  в виде объекта, который указали в Call (body() возвращает) не пустой
+                            tracks.addAll(response.body()?.results!!) // добавляем все найденные треки в спсиок addAll() для отображения на экране
+                            trackAdapter.notifyDataSetChanged() // уведомляем адаптер об изменении набора данных, перерисовавается весь набор, это не оптимально
+                        } else {
+                            tracks.clear()
+                            rvSearchTrack.visibility = View.GONE
+                            nothingFoundPlaceholder.visibility = View.VISIBLE// показываем плейсхолднер nothing_found
+                        }
+                    } else {
+                        tracks.clear()
+                        rvSearchTrack.visibility = View.GONE
+                        communicationProblemPlaceholder.visibility = View.VISIBLE// показываем плейсхолднер communication_problem
+                    }
+                }
+
+                override fun onFailure(call: Call<TrackResponce>, t: Throwable) { // метод вызывается если не получилось установить соединение с сервером
+                    tracks.clear()
+                    rvSearchTrack.visibility = View.GONE
+                    communicationProblemPlaceholder.visibility = View.VISIBLE // показываем плейсхолднер communication_problem
+                }
+
+            })
+        }
+    }
+
+    // Метод делает видимой / невидимой кнопку clearButton
+    // в зависимости от того есть или нет текст в поле editText
+    // метод возвращает количество последовательности символов
+    private fun clearButtonVisibility(s: CharSequence?): Int {
+        return if (s.isNullOrEmpty()) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+    }
+
+    // метод сохраняет поисковой запрос
+    override fun onSaveInstanceState(outState: Bundle) {
+        searchQuery = editText.text.toString()
+        super.onSaveInstanceState(outState)
+        outState.putString(SEARCH_USER_INPUT, searchQuery)
+    }
+
+    // метод восстанавливает поисковой запрос после пересоздания активити
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchQuery = savedInstanceState.getString(SEARCH_USER_INPUT,"")
+    }
+
+    companion object {
+        const val SEARCH_USER_INPUT = "SEARCH_USER_INPUT"
+        const val ITUNES_BASE_URL = "https://itunes.apple.com"
+    }
 }
+const val TRACKS_PREFERENCES = "tracks_preferences"
+const val NEW_TRACK_KEY = "key_for_new_track"
+const val TRACKS_LIST_KEY = "key_for_tracks_list"
 
 //        логика для макета дизайна, с кнопками для перехода между экранами внизу активити
 //        val libraryButton = findViewById<Button>(R.id.library_button_search_activity)

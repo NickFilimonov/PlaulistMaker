@@ -86,7 +86,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="150dp"
         android:orientation="vertical"
-        android:visibility="gone">
+       >
 
         <TextView
             android:layout_width="wrap_content"
@@ -101,20 +101,22 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_search_history"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_height="305dp"
+            android:layout_marginTop="20dp"
             android:orientation="vertical"
-            tools:listitem="@layout/track_item"
-            tools:itemCount="5"/>
-        
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="0"
+            tools:listitem="@layout/track_item" />
+
         <Button
             android:id="@+id/search_history_button"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_gravity="center"
+            android:layout_marginTop="24dp"
             app:cornerRadius="54dp"
             android:backgroundTint="?attr/colorOnPrimary"
-            android:text="Очистить историю"
+            android:text="@string/clear_history"
             android:maxLines="1"
             android:textColor="?attr/colorSecondary"
             android:textSize="14sp"
