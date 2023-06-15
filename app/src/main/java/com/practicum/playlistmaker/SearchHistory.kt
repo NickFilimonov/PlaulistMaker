@@ -33,6 +33,9 @@ class SearchHistory (val sharedPreferences: SharedPreferences) {
 
     fun clearHistory() {
         searchedTrackList.clear()
+        sharedPreferences.edit()
+            .clear()
+            .apply()
     }
 
     // метод дессириализует массив объектов Fact (в Shared Preference они хранятся в виде json строки)

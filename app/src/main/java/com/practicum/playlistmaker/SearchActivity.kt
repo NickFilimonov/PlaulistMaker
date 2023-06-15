@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import retrofit2.Call
@@ -22,16 +23,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.properties.Delegates.notNull
 
 class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
-    // данный конструкт помогает отложить реализацию переменной
-    // переменная searchQuery хранит пользовательский ввод в edittext
-    private var searchQuery by notNull<String>()
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(ITUNES_BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val iTunesService = retrofit.create(iTunesSearchApi::class.java)
 
     private lateinit var clearButton: ImageView
     private lateinit var editText: EditText
@@ -41,30 +32,26 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
     private lateinit var communicationProblemPlaceholder: LinearLayout
     private lateinit var communicationProblemButton: Button
     private lateinit var rvSearchHistory: RecyclerView
-    private lateinit var searchHistoryLayout: LinearLayout
+    private lateinit var searchHistoryLayout: NestedScrollView
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var searchedTrack: String
     private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
     private lateinit var clearSearchHistoryButton: Button
+    private lateinit var searchHistory: SearchHistory
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(ITUNES_BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val iTunesService = retrofit.create(iTunesSearchApi::class.java)
 
     private val tracks = ArrayList<Track>()
 
     private val trackAdapter = TrackAdapter(this)
 
+    private val tracksInHistory = ArrayList<Track>()
+
     private val searchHistoryAdapter = SearchHistoryAdapter()
-
-    // метод дессириализует массив объектов Fact (в Shared Preference они хранятся в виде json строки)
-    private fun createTrackListFromJson(json: String?): Array<Track> {
-        return Gson().fromJson(json, Array<Track>::class.java)
-    }
-
-    override fun onTrackClick(track: Track) {
-
-        val searchHistory = SearchHistory(sharedPreferences)
-
-        searchHistory.addNewTrack(track)
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,39 +70,37 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
 
         sharedPreferences = getSharedPreferences(TRACKS_PREFERENCES, MODE_PRIVATE)
 
-//        sharedPreferences.edit()
-//            .clear()
-//            .apply()
+        searchHistory = SearchHistory(sharedPreferences)
 
-        val searchedTrack = sharedPreferences.getString(TRACKS_LIST_KEY, null)
+        tracksInHistory.addAll(searchHistory.searchedTrackList)
 
-        if (searchedTrack != null) {
-            searchHistoryLayout.visibility = View.VISIBLE
-            searchHistoryAdapter.searchHistory.addAll(createTrackListFromJson(searchedTrack))
+
+        if (tracksInHistory.isEmpty()) {
+            searchHistoryLayout.visibility = View.GONE
         }
 
         listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
             if (key == TRACKS_LIST_KEY) {
                 val tracks = sharedPreferences?.getString(TRACKS_LIST_KEY, null)
                 if (tracks != null) {
-                    val searchHistory = SearchHistory(sharedPreferences)
-                    searchHistory.clearHistory()
-                    searchHistoryAdapter.searchHistory.addAll(createTrackListFromJson(searchedTrack))
+                    tracksInHistory.clear()
+                    tracksInHistory.addAll(createTrackListFromJson(tracks))
                     searchHistoryAdapter.notifyDataSetChanged()
                 }
             }
         }
 
         clearSearchHistoryButton.setOnClickListener {
-            searchHistoryLayout.visibility = View.GONE
-            val searchHistory = SearchHistory(sharedPreferences)
             searchHistory.clearHistory()
+            tracksInHistory.clear()
+            searchHistoryLayout.visibility = View.GONE
+            searchHistoryAdapter.notifyDataSetChanged()
         }
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
 
         editText.setOnFocusChangeListener { v, hasFocus ->
-            searchHistoryLayout.visibility = if (hasFocus && editText.text.isEmpty()) View.VISIBLE else View.GONE
+            searchHistoryLayout.visibility = if (hasFocus && editText.text.isEmpty() && tracksInHistory.isNotEmpty()) View.VISIBLE else View.GONE
         }
 
         backButton.setOnClickListener {
@@ -132,6 +117,8 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         }
 
         trackAdapter.tracks = tracks
+
+        searchHistoryAdapter.searchHistory = tracksInHistory
 
         rvSearchTrack.adapter = trackAdapter
 
@@ -221,6 +208,15 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         }
     }
 
+    override fun onTrackClick(track: Track) {
+        searchHistory.addNewTrack(track)
+    }
+
+    // метод дессириализует массив объектов Fact (в Shared Preference они хранятся в виде json строки)
+    private fun createTrackListFromJson(json: String?): Array<Track> {
+        return Gson().fromJson(json, Array<Track>::class.java)
+    }
+
     // метод сохраняет поисковой запрос
     override fun onSaveInstanceState(outState: Bundle) {
         searchQuery = editText.text.toString()
@@ -234,13 +230,16 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.TrackClickListener {
         searchQuery = savedInstanceState.getString(SEARCH_USER_INPUT,"")
     }
 
+    // данный конструкт помогает отложить реализацию переменной
+    // переменная searchQuery хранит пользовательский ввод в edittext
+    private var searchQuery by notNull<String>()
+
     companion object {
         const val SEARCH_USER_INPUT = "SEARCH_USER_INPUT"
         const val ITUNES_BASE_URL = "https://itunes.apple.com"
     }
 }
 const val TRACKS_PREFERENCES = "tracks_preferences"
-const val NEW_TRACK_KEY = "key_for_new_track"
 const val TRACKS_LIST_KEY = "key_for_tracks_list"
 
 //        логика для макета дизайна, с кнопками для перехода между экранами внизу активити
