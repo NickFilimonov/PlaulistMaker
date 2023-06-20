@@ -24,6 +24,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:text="@string/search"
+        android:layout_marginTop="14dp"
+        android:layout_marginStart="64dp"
         style="@style/text_header" />
     
     <EditText
