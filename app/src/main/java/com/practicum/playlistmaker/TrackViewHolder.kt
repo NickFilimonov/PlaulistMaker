@@ -16,10 +16,12 @@ class TrackViewHolder(parent: ViewGroup):
     private val trackName: TextView = itemView.findViewById(R.id.track_name)
     private val bandName: TextView = itemView.findViewById(R.id.band_name)
     private val trackTime: TextView = itemView.findViewById(R.id.track_time)
+    private var trackId: String = ""
 
     fun bind(item: Track) {
         trackName.text = item.trackName
         bandName.text = item.artistName
+        trackId = item.trackId
         trackTime.text = DateUtils.formatTime(item.trackTimeMillis)
         Glide.with(itemView)
             .load(item.artworkUrl100)
